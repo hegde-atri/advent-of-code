@@ -1,0 +1,11 @@
+[workspace]
+members = ["20*/??[ab]"]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.65"
+description = "My solutions to <https://adventofcode.com>"
+authors = ["Atri Hegde <iamatrihegde@outlook.com>"]
+repository = "https://github.com/hegde-atri/advent-of-code"
+license = "GPL-v3"
+publish = false
