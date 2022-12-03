@@ -1,5 +1,6 @@
+use std::collections::VecDeque;
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{self, BufRead, Read};
 use std::path::Path;
 
 fn main() {
@@ -7,7 +8,7 @@ fn main() {
     part2();
 }
 
-fn part1() {
+fn part1() -> i32 {
     let mut priorities_sum = 0;
     if let Ok(input) = read_lines("input.txt") {
         for lines in input {
@@ -32,38 +33,39 @@ fn part1() {
         }
     }
     println!("Part 1 priorities sum: {}", priorities_sum);
+    return priorities_sum;
 }
 
-fn part2() {
+fn part2() -> i32 {
     let mut priorities_sum = 0;
-    if let Ok(input) = read_lines("input.txt") {
-        let mut count = 1;
-        let mut rugsacks: [String; 3] = [String::new(), String::new(), String::new()];
-        for lines in input {
-            if let Ok(line) = lines {
-                let mut common: char = ' ';
-                rugsacks[count % 3] = line;
-                if count % 3 == 0 {
-                    for c1 in rugsacks[0].chars() {
-                        for c2 in rugsacks[1].chars() {
-                            for c3 in rugsacks[2].chars() {
-                                if c1 == c2 && c2 == c3 {
-                                    common = c3;
-                                }
-                            }
-                        }
-                    }
-                    if common.is_lowercase() {
-                        priorities_sum += common as i32 - 96;
+    let mut file = File::open("input.txt").expect("File not found");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)
+        .expect("Reading from file failed!");
+    let mut queue: VecDeque<String> = VecDeque::new();
+    for (i, line) in contents.lines().enumerate() {
+        queue.push_front(String::from(line));
+        if (i + 1) % 3 == 0 {
+            let r1 = queue.pop_back().unwrap();
+            let r2 = queue.pop_back().unwrap();
+            let r3 = queue.pop_back().unwrap();
+
+            for i in r3.chars() {
+                if r2.contains(i) && r1.contains(i) {
+                    if i.is_lowercase() {
+                        priorities_sum += i as i32 - 96;
                     } else {
-                        priorities_sum += common as i32 - 38;
+                        priorities_sum += i as i32 - 38;
                     }
+                    break;
                 }
             }
-            count += 1;
         }
     }
+
     println!("Part 2 badges sum: {}", priorities_sum);
+
+    return priorities_sum;
 }
 
 /// Read lines from file
@@ -73,4 +75,19 @@ where
 {
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_test() {
+        assert_eq!(part1(), 8085);
+    }
+
+    #[test]
+    fn part2_test() {
+        assert_eq!(part2(), 2515);
+    }
 }

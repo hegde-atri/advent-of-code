@@ -1,9 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 name="$(printf "aoc%02d" "$1")"
 cargo new --bin "$name"
 mv "$name" "$(printf "%02d" "$1")"
-echo https://adventofcode.com/2022/day/"$1"/input
+source .session
+curl https://adventofcode.com/2022/day/"$1"/input -o "$(printf "%02d" "$1")"/input.txt --cookie "session=$session"
 cat <<EOT >> "$(printf "%02d" "$1")"/src/main.rs
 
 /// Read lines from file
