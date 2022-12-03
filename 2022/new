@@ -3,3 +3,15 @@
 name="$(printf "aoc%02d" "$1")"
 cargo new --bin "$name"
 mv "$name" "$(printf "%02d" "$1")"
+echo https://adventofcode.com/2022/day/"$1"/input
+cat <<EOT >> "$(printf "%02d" "$1")"/src/main.rs
+
+/// Read lines from file
+fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+where
+    P: AsRef<Path>,
+{
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
+}
+EOT
