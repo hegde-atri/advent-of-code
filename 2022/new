@@ -5,14 +5,21 @@ cargo new --bin "$name"
 mv "$name" "$(printf "%02d" "$1")"
 source .session
 curl https://adventofcode.com/2022/day/"$1"/input -o "$(printf "%02d" "$1")"/input.txt --cookie "session=$session"
-cat <<EOT >> "$(printf "%02d" "$1")"/src/main.rs
+cat <<EOT > "$(printf "%02d" "$1")"/src/main.rs
+use std::fs::File;
+use std::io::{self, BufRead, Read};
+use std::path::Path;
 
-/// Read lines from file
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where
-    P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
+fn main(){
+   part1();
+   part2();
 }
+
+fn part1() {
+   let mut file = File::open("input.txt").expect("File not found");
+   let mut contents = String::new();
+    file.read_to_string(&mut contents)
+        .expect("Reading from file failed!");
+}
+
 EOT
