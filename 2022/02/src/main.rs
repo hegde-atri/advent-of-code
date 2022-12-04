@@ -40,6 +40,7 @@ fn part2() {
 }
 
 /// What hand did we play (Rock, Paper, Scissors)
+#[derive(Debug, PartialEq)]
 enum Choice {
     Rock,
     Paper,
