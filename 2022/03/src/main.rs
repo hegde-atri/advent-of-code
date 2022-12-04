@@ -33,7 +33,7 @@ fn part1() -> i32 {
         }
     }
     println!("Part 1 priorities sum: {}", priorities_sum);
-    return priorities_sum;
+    priorities_sum
 }
 
 fn part2() -> i32 {
@@ -65,7 +65,7 @@ fn part2() -> i32 {
 
     println!("Part 2 badges sum: {}", priorities_sum);
 
-    return priorities_sum;
+    priorities_sum
 }
 
 /// Read lines from file

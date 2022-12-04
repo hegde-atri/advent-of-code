@@ -123,7 +123,7 @@ fn get_score(my_choice: &Choice, oppenent_choice: &Choice) -> i32 {
             Choice::Scissors => 3,
         },
     };
-    return choice_score + result_score;
+    choice_score + result_score
 }
 
 /// Read lines from file

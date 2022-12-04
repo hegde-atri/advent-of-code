@@ -36,7 +36,7 @@ fn part2() {
     if let Ok(lines) = read_lines("./input.txt") {
         for line in lines {
             if let Ok(ip) = line {
-                if ip == "" {
+                if ip.is_empty() {
                     // If new line, check if Highest and reset sum
                     if sum > top1 {
                         top3 = top2;
