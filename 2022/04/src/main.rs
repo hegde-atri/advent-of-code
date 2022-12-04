@@ -26,7 +26,7 @@ fn part1() -> u32 {
         }
     }
     println!("Assignment pairs: {ass_pairs}");
-    return ass_pairs;
+    ass_pairs
 }
 
 fn part2() -> u32 {
@@ -47,8 +47,8 @@ fn part2() -> u32 {
             ass_overlap += 1;
         }
     }
-    println!("Ass Overlap: {ass_overlap}");
-    return ass_overlap;
+    println!("Assignment overlap: {ass_overlap}");
+    ass_overlap
 }
 
 #[cfg(test)]
