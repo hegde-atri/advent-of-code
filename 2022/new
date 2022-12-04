@@ -6,32 +6,50 @@ mv "$name" "$(printf "%02d" "$1")"
 source .session
 curl https://adventofcode.com/2022/day/"$1"/input -o "$(printf "%02d" "$1")"/input.txt --cookie "session=$session"
 cat <<EOT > "$(printf "%02d" "$1")"/src/main.rs
-use std::fs::File;
-use std::io::{self, BufRead, Read};
-use std::path::Path;
+use std::{fs::File, io::Read};
 
-fn main(){
-   part1();
-   part2();
+fn main() {
+    part1(parse_input());
+    part2(parse_input());
 }
 
-fn part1() {
-   let mut file = File::open("input.txt").expect("File not found");
-   let mut contents = String::new();
-   file.read_to_string(&mut contents)
+fn parse_input() -> String {
+    let mut file = File::open("input.txt").expect("File not found");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)
         .expect("Reading from file failed!");
-   for line in content.lines() {
+    contents
+}
+
+fn part1(input: String){
+   for line in input.lines(){
 
    }
 }
 
-fn part2() {
-   let mut file = File::open("input.txt").expect("File not found");
-   let mut contents = String::new();
-   file.read_to_string(&mut contents)
-        .expect("Reading from file failed!");
-   for line in content.lines() {
+fn part2(input: String) -> u8{
+   for line in input.lines(){
 
    }
+   let a: u8 = 0;
+   a
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE: &str = r"";
+
+    #[test]
+    fn part1_test() {
+        assert_eq!(2, part1(EXAMPLE.to_owned()));
+    }
+
+    #[test]
+    fn part2_test() {
+        assert_eq!(0, part2(EXAMPLE.to_owned()));
+    }
+}
+
 EOT
