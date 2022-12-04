@@ -1,14 +1,11 @@
-use std::collections::HashSet;
-use std::fs::File;
-use std::io::{self, BufRead, Read};
-use std::path::Path;
+use std::{fs::File, io::Read};
 
 fn main() {
     part1();
     part2();
 }
 
-fn part1() {
+fn part1() -> u32 {
     let mut ass_pairs = 0;
     let mut file = File::open("input.txt").expect("File not found");
     let mut contents = String::new();
@@ -22,18 +19,17 @@ fn part1() {
             && end1.parse::<u32>().unwrap() >= end2.parse::<u32>().unwrap()
         {
             ass_pairs += 1;
-            println!("{start1}, {end1} : {start2}, {end2}");
         } else if start1.parse::<u32>().unwrap() >= start2.parse::<u32>().unwrap()
             && end1.parse::<u32>().unwrap() <= end2.parse::<u32>().unwrap()
         {
             ass_pairs += 1;
-            println!("{start1}, {end1} : {start2}, {end2}");
         }
     }
     println!("Assignment pairs: {ass_pairs}");
+    return ass_pairs;
 }
 
-fn part2() {
+fn part2() -> u32 {
     let mut ass_overlap = 0;
     let mut file = File::open("input.txt").expect("File not found");
     let mut contents = String::new();
@@ -52,4 +48,20 @@ fn part2() {
         }
     }
     println!("Ass Overlap: {ass_overlap}");
+    return ass_overlap;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_test() {
+        assert_eq!(534, part1());
+    }
+
+    #[test]
+    fn part2_test() {
+        assert_eq!(841, part2());
+    }
 }
