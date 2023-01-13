@@ -145,7 +145,7 @@ fn part1(input: Vec<Vec<u32>>) {
 }
 
 fn part2(input: Vec<Vec<u32>>) {
-    println!("{}", calculate_scenic(input));
+    println!("Scenic Score: {}", calculate_scenic(input));
 }
 
 #[cfg(test)]

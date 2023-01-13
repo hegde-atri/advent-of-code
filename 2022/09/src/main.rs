@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::{collections::HashSet, fs::File, io::Read};
 
 fn main() {
@@ -5,12 +6,11 @@ fn main() {
     part2(parse_input());
 }
 
-/// Directions Up, Down, Left, Right
 enum Direction {
-    Up,
-    Down,
     Left,
     Right,
+    Up,
+    Down,
 }
 
 impl Direction {
@@ -26,6 +26,18 @@ impl Direction {
     }
 }
 
+#[derive(Eq, PartialEq, Hash, Clone, Copy)]
+struct Coord {
+    x: isize,
+    y: isize,
+}
+
+impl Coord {
+    fn new() -> Self {
+        Coord { x: 0, y: 0 }
+    }
+}
+
 fn parse_input() -> String {
     let mut file = File::open("input.txt").expect("File not found");
     let mut contents = String::new();
@@ -33,98 +45,81 @@ fn parse_input() -> String {
         .expect("Reading from file failed!");
     contents
 }
+fn part1(input: String) -> usize {
+    let mut head = Coord::new();
+    let mut tail = Coord::new();
+    let mut seen = HashSet::new();
+    seen.insert(tail);
 
-fn do_instruction<'a>(
-    instruction: &str,
-    head: &mut [i32; 2],
-    tail: &mut [i32; 2],
-    visited: &'a mut HashSet<[i32; 2]>,
-) {
-    let (d, a) = instruction.split_once(' ').unwrap();
-    let amount = a.parse::<u8>().unwrap();
-    let direction = Direction::parse_direction(d).unwrap();
-    for _ in 0..amount {
-        // now sort through direction
-        match direction {
-            Direction::Up => {
-                head[1] += 1;
-            }
-            Direction::Down => {
-                head[1] += -1;
-            }
-            Direction::Left => {
-                head[0] += -1;
-            }
-            Direction::Right => {
-                head[0] += 1;
-            }
-        }
-        // make tail follow the head.
-        // if tail is along x/y axis.
-        // if tail is diagonal.
-
-        // update visited
-        println!("working? {:?}", tail);
-        visited.insert(*tail);
-    }
-}
-
-fn part1(input: String) -> u32 {
-    // lets initialize a visited hashset to hold our visited locations
-    let mut visited: HashSet<[i32; 2]> = HashSet::new();
-    // lets intialize position of head and tail
-    let mut head: [i32; 2] = [0, 0];
-    let mut tail: [i32; 2] = [0, 0];
     for line in input.lines() {
-        // do instruction
-        let (d, a) = line.split_once(' ').unwrap();
-        let amount = a.parse::<u8>().unwrap();
-        let direction = Direction::parse_direction(d).unwrap();
+        let (dir, amount) = line.split_once(' ').unwrap();
+        let dir = Direction::parse_direction(dir).unwrap();
+        let amount: i32 = amount.parse().unwrap();
 
         for _ in 0..amount {
-            // now sort through direction
-            match direction {
-                Direction::Up => {
-                    head[1] += 1;
-                }
-                Direction::Down => {
-                    head[1] += -1;
-                }
-                Direction::Left => {
-                    head[0] += -1;
-                }
-                Direction::Right => {
-                    head[0] += 1;
-                }
+            match dir {
+                Direction::Up => head.y += 1,
+                Direction::Down => head.y -= 1,
+                Direction::Left => head.x -= 1,
+                Direction::Right => head.x += 1,
             }
-            let x_diff = head[0] - tail[0];
-            let y_diff = head[1] - tail[1];
-            // make tail follow the head.
-            // if tail is along x/y axis.
-            if x_diff.is_positive() && y_diff == 0 {
-                tail[0] += 1;
-            } else if head[0] < tail[0] && head[1] == tail[1] {
-                tail[0] -= 1;
-            } else if head[0] == tail[0] && head[1] > tail[1] {
-                tail[1] += 1;
-            } else if head[0] == tail[0] && head[1] < tail[1] {
-                tail[1] -= 1;
-            } else if x_diff.abs() == y_diff.abs() {
+            // if head is touching tail
+            let diff = Coord {
+                x: head.x - tail.x,
+                y: head.y - tail.y,
+            };
+            let not_touching = diff.x.abs() > 1 || diff.y.abs() > 1;
+            // tail moves diagonally if not touching
+            if not_touching {
+                tail.x += diff.x.signum();
+                tail.y += diff.y.signum();
+                seen.insert(tail);
             }
-
-            // update visited
-            visited.insert(tail);
         }
     }
-    // calulate visited cells
-    println!("{}", visited.len() as u32);
-    visited.len() as u32
+    println!("Part 1 - Seen size: {}", seen.len());
+    seen.len()
 }
 
-fn part2(input: String) -> u8 {
-    for line in input.lines() {}
-    let a: u8 = 0;
-    a
+fn part2(input: String) -> usize {
+    let start = Coord::new();
+    let mut rope = vec![start; 10];
+    let mut seen = HashSet::new();
+    seen.insert(start);
+
+    for line in input.lines() {
+        let (dir, amount) = line.split_once(' ').unwrap();
+        let amount: i32 = amount.parse().unwrap();
+
+        for _ in 0..amount {
+            match dir {
+                "U" => rope[0].y += 1,
+                "D" => rope[0].y -= 1,
+                "L" => rope[0].x -= 1,
+                "R" => rope[0].x += 1,
+                _ => println!("Invalid move direction called"),
+            }
+            // loop for rest of the rope
+            for (h, t) in (0..rope.len()).tuple_windows() {
+                let diff = Coord {
+                    x: rope[h].x - rope[t].x,
+                    y: rope[h].y - rope[t].y,
+                };
+                let not_touching = diff.x.abs() > 1 || diff.y.abs() > 1;
+                // tail moves diagonally if not touching
+                if not_touching {
+                    rope[t].x += diff.x.signum();
+                    rope[t].y += diff.y.signum();
+                    // only add last knot
+                    if t == rope.len() - 1 {
+                        seen.insert(rope[rope.len() - 1]);
+                    }
+                }
+            }
+        }
+    }
+    println!("Part 2 - Seen size: {}", seen.len());
+    seen.len()
 }
 
 #[cfg(test)]
@@ -140,13 +135,22 @@ D 1
 L 5
 R 2";
 
+    const EXAMPLE2: &str = r"R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20";
+
     #[test]
     fn part1_test() {
-        assert_eq!(2, part1(EXAMPLE.to_owned()));
+        assert_eq!(13, part1(EXAMPLE.to_owned()));
     }
 
     #[test]
     fn part2_test() {
-        assert_eq!(0, part2(EXAMPLE.to_owned()));
+        assert_eq!(36, part2(EXAMPLE2.to_owned()));
     }
 }
